@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.kakao.sdk:usermgmt:1.19.0@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/68b6032a541f6e758e518f369ea2c8eb/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/68b6032a541f6e758e518f369ea2c8eb/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/9e4c59b298c89cfd67b9fba1166d10f4/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/9e4c59b298c89cfd67b9fba1166d10f4/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

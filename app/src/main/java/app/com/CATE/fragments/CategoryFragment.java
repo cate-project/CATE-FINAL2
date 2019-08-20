@@ -6,12 +6,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -40,6 +42,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,7 +52,7 @@ public class CategoryFragment extends ListFragment {
     private CategoryAdapter adapter = null;
     private List<CategoryModel> categoryList;
     private MainActivity mainActivity;
-    private SparseBooleanArray mSelectedItems=new SparseBooleanArray(0);
+    private SparseBooleanArray mSelectedItems = new SparseBooleanArray(0);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,24 +65,24 @@ public class CategoryFragment extends ListFragment {
         All_category();
 
 
-
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    public void All_category(){
-        Retrofit retrofit=new Retrofit.Builder()
+    public void All_category() {
+        Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(RetrofitService.URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        RetrofitService retrofitService=retrofit.create(RetrofitService.class);
-        Call<JsonObject> call=retrofitService.all_category(MainActivity.strName);
-        call.enqueue(new Callback<JsonObject>() {
+        RetrofitService retrofitService = retrofit.create(RetrofitService.class);
+        retrofitService.all_category(mainActivity.strName).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                JsonObject jsonObject=response.body();
+                JsonObject jsonObject = response.body();
                 try {
                     JsonArray jsonArray = jsonObject.get("response").getAsJsonArray();
+                    JsonArray numberArray = jsonObject.get("category_number").getAsJsonArray();
+
                     int count = 0;
 
                     String cateId, cateName, cateDetail, cateKey;
@@ -87,13 +90,16 @@ public class CategoryFragment extends ListFragment {
                     while (count < jsonArray.size()) {
                         JsonObject object = jsonArray.get(count).getAsJsonObject();
 
+                        if (numberArray.get(count).getAsJsonObject().get("category_number").getAsString().equals("1")) cateState = true;
+                        else cateState = false;
+
                         cateId = object.get("id").getAsString();
                         cateName = object.get("name").getAsString();
                         cateDetail = object.get("detail").getAsString();
                         cateKey = object.get("key").getAsString();
-                        cateState = true;
-                        if(cateState){
-                            mSelectedItems.put(count,true);
+
+                        if (cateState) {
+                            mSelectedItems.put(count, true);
                         }
                         CategoryModel CategoryModel = new CategoryModel(cateId, cateName, cateDetail, cateKey, cateState);
                         categoryList.add(CategoryModel);
@@ -102,10 +108,8 @@ public class CategoryFragment extends ListFragment {
                     }
 
                     setListAdapter(adapter);
-
-
                 } catch (Exception e) {
-                    e.printStackTrace();
+
                 }
             }
 
@@ -123,8 +127,8 @@ public class CategoryFragment extends ListFragment {
         CategoryModel item = (CategoryModel) l.getItemAtPosition(position);
         new PcOfSeat().execute(item.getDetail());
 
-        if(mSelectedItems.get(position,false)){
-            mSelectedItems.put(position,false);
+        if (mSelectedItems.get(position, false)) {
+            mSelectedItems.put(position, false);
             v.setBackgroundColor(Color.TRANSPARENT);
 
             Map map = new HashMap();
@@ -150,9 +154,8 @@ public class CategoryFragment extends ListFragment {
                 }
             });
 
-        }
-        else{
-            mSelectedItems.put(position,true);
+        } else {
+            mSelectedItems.put(position, true);
             v.setBackgroundColor(Color.LTGRAY);
 
             Map map = new HashMap();

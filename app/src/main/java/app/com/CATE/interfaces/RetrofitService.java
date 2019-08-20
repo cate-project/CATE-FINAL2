@@ -26,7 +26,7 @@ public interface RetrofitService {
     @FormUrlEncoded
     @POST("fow_tag.php")
     Call<JsonObject> all_category(
-            @Field("Id") String Id
+            @Field("user_name") String userName
     );
 
     @FormUrlEncoded

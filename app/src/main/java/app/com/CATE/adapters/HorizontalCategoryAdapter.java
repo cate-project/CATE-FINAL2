@@ -19,20 +19,11 @@ public class HorizontalCategoryAdapter extends RecyclerView.Adapter<HorizontalCa
     private ArrayList<String> itemList;
     private Context context;
     private OnArrayClickListner onArrayClickListner;
-    private OnItemClickListener mListener = null ;
 
     public HorizontalCategoryAdapter(Context context, ArrayList<String> itemList, OnArrayClickListner onArrayClickListner) {
         this.context = context;
         this.itemList = itemList;
         this.onArrayClickListner = onArrayClickListner;
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(View v, int position) ;
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.mListener = listener ;
     }
 
     @Override
@@ -52,7 +43,6 @@ public class HorizontalCategoryAdapter extends RecyclerView.Adapter<HorizontalCa
         holder.textview.setText(item);
 //        holder.textview.setTag(item);
         holder.bind(itemList.get(position), onArrayClickListner);
-
     }
 
 
@@ -70,21 +60,6 @@ public class HorizontalCategoryAdapter extends RecyclerView.Adapter<HorizontalCa
             super(itemView);
 
             textview = (TextView) itemView.findViewById(R.id.category_textView);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("aa","success");
-                    int pos = getAdapterPosition() ;
-                    if (pos != RecyclerView.NO_POSITION) {
-                        // 리스너 객체의 메서드 호출.
-                        if (mListener != null) {
-                            mListener.onItemClick(v, pos) ;
-                        }
-                    }
-                }
-            });
-
         }
 
 
@@ -92,7 +67,7 @@ public class HorizontalCategoryAdapter extends RecyclerView.Adapter<HorizontalCa
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onArrayClickListner.onArrayClick(string);
+                    onArrayClickListner.onArrayClick(string, view);
                 }
             });
         }

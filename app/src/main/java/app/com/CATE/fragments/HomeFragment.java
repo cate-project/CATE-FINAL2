@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -78,6 +79,7 @@ public class HomeFragment extends Fragment {
     private Spinner spinnerSort;
     ArrayList<String> arrayListSort;
     ArrayAdapter<String> arrayAdapterSort;
+    private View preView;
 
     public MainActivity mainActivity;
 
@@ -164,39 +166,17 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-
-    private void initList(ArrayList<YoutubeDataModel> mListData) {
-        mList_videos.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new VideoPostAdapter(getActivity(), mListData, new OnItemClickListener() {
-            @Override
-            public void onItemClick(YoutubeDataModel item) {
-                YoutubeDataModel youtubeDataModel = item;
-                if (youtubeDataModel.getVideo_kind().equals("YOUTUBE")) { //유튜브 플레이어
-                    Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                    intent.putExtra(YoutubeDataModel.class.toString(), youtubeDataModel);
-                    intent.putExtra("userID", userID);
-                    intent.putExtra("video_index", youtubeDataModel.getVideo_index());
-                    startActivity(intent);
-                }
-                if (youtubeDataModel.getVideo_kind().equals("TWITCH")) {
-                    Intent intent = new Intent(getActivity(), TwitchActivity.class); //트위치 플레이어
-                    intent.putExtra(YoutubeDataModel.class.toString(), youtubeDataModel);
-                    intent.putExtra("userID", userID);
-                    intent.putExtra("video_index", youtubeDataModel.getVideo_index());
-                    startActivity(intent);
-                }
-            }
-        });
-        mList_videos.setAdapter(adapter);
-
-    }
-
     //가로 카테고리
     private void init(ArrayList<String> arrayList) {
 
         adapter2 = new HorizontalCategoryAdapter(getContext(), arrayList, new OnArrayClickListner(){
             @Override
-            public void onArrayClick(String string) {
+            public void onArrayClick(String string, View view) {
+                if(preView != null) preView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.border));
+                preView = view;
+
+                view.setBackgroundColor(Color.LTGRAY);
+
                 mListData = new ArrayList<>();
 
                 Retrofit retrofit = new Retrofit.Builder()
@@ -245,19 +225,34 @@ public class HomeFragment extends Fragment {
                 });
             }
         });
-
-        adapter2.setOnItemClickListener(new HorizontalCategoryAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick (View v,int position){
-                // TODO : 아이템 클릭 이벤트를 HomeFragment에서 처리.
-                v.setBackgroundColor(Color.LTGRAY);
-            }
-        });
-
         listview2.setAdapter(adapter2);
-
     }
 
+    private void initList(ArrayList<YoutubeDataModel> mListData) {
+        mList_videos.setLayoutManager(new LinearLayoutManager(getActivity()));
+        adapter = new VideoPostAdapter(getActivity(), mListData, new OnItemClickListener() {
+            @Override
+            public void onItemClick(YoutubeDataModel item) {
+                YoutubeDataModel youtubeDataModel = item;
+                if (youtubeDataModel.getVideo_kind().equals("YOUTUBE")) { //유튜브 플레이어
+                    Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                    intent.putExtra(YoutubeDataModel.class.toString(), youtubeDataModel);
+                    intent.putExtra("userID", userID);
+                    intent.putExtra("video_index", youtubeDataModel.getVideo_index());
+                    startActivity(intent);
+                }
+                if (youtubeDataModel.getVideo_kind().equals("TWITCH")) {
+                    Intent intent = new Intent(getActivity(), TwitchActivity.class); //트위치 플레이어
+                    intent.putExtra(YoutubeDataModel.class.toString(), youtubeDataModel);
+                    intent.putExtra("userID", userID);
+                    intent.putExtra("video_index", youtubeDataModel.getVideo_index());
+                    startActivity(intent);
+                }
+            }
+        });
+        mList_videos.setAdapter(adapter);
+
+    }
 
     //동영상 썸네일 주소 받아오기
     class RequestVideoThumbnail extends AsyncTask<Void, String, String> {
